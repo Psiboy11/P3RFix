@@ -27,6 +27,7 @@ int iCustomResY = -1;
 bool bHUDFix;
 bool bAspectFix;
 bool bFOVFix;
+float fAdditionalFOV;
 bool bSkipLogos;
 int iSkipLogos;
 bool bUncapMenuFPS;
@@ -150,6 +151,7 @@ void ReadConfig()
     inipp::get_value(ini.sections["Fix HUD"], "Enabled", bHUDFix);
     inipp::get_value(ini.sections["Fix Aspect Ratio"], "Enabled", bAspectFix);
     inipp::get_value(ini.sections["Fix FOV"], "Enabled", bFOVFix);
+    inipp::get_value(ini.sections["Fix FOV"], "AdditionalFOV", fAdditionalFOV);
     inipp::get_value(ini.sections["Screen Percentage"], "Enabled", bScreenPercentage);
     inipp::get_value(ini.sections["Screen Percentage"], "Value", fScreenPercentage);
     inipp::get_value(ini.sections["Render Texture Resolution"], "Enabled", bRenTexResMulti);
@@ -174,6 +176,7 @@ void ReadConfig()
     spdlog::info("Config Parse: bHUDFix: {}", bHUDFix);
     spdlog::info("Config Parse: bAspectFix: {}", bAspectFix);
     spdlog::info("Config Parse: bFOVFix: {}", bFOVFix);
+    spdlog::info("Config Parse: fAdditionalFOV: {}", fAdditionalFOV);
     spdlog::info("Config Parse: bScreenPercentage: {}", bScreenPercentage);
     spdlog::info("Config Parse: fScreenPercentage: {}", fScreenPercentage);
     if (fScreenPercentage < (float)10 || fScreenPercentage > (float)400)
@@ -356,7 +359,8 @@ void AspectFOVFix()
                     {
                         fov = atanf(tanf(fov * (fPi / 360)) / fNativeAspect * fAspectRatio) * (360 / fPi);
                     }
-                    ctx.xmm0.f32[0] = fov;
+                        fov += fAdditionalFOV;
+			ctx.xmm0.f32[0] = fov;
                 });
         }
         else if (!FOVScanResult)
